@@ -1,0 +1,16 @@
+<head>
+    <title>concrete-wasm demo</title>
+</head>
+
+<body>
+    <script type="module">
+        import init, { generate } from './pkg/concrete_wasm_test.js';
+
+        async function run() {
+            await init();
+            generate();
+        }
+
+        run();
+    </script>
+</body>

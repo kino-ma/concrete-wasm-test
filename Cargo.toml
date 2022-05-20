@@ -1,0 +1,17 @@
+[package]
+name = "concrete-wasm-test"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+wasm-bindgen = {version = "0.2.74"}
+console_error_panic_hook = "0.1.7"
+
+[dependencies.concrete-csprng]
+path = "../concrete-core/concrete-csprng"
+features = ["seeder_js", "generator_soft"]
