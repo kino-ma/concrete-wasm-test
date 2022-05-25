@@ -2,7 +2,7 @@ use std::panic;
 
 extern crate console_error_panic_hook;
 use concrete_csprng::generators::{RandomGenerator, SoftwareRandomGenerator};
-use concrete_csprng::seeders::{JsSeeder, Seeder};
+use concrete_csprng::seeders::{ExternalLibSeeder, Seeder};
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -18,7 +18,7 @@ pub fn generate() {
     log("enter");
     panic::set_hook(Box::new(console_error_panic_hook::hook));
     log("set hook");
-    let mut seeder = JsSeeder;
+    let mut seeder = ExternalLibSeeder;
     log("seeder");
     let seed = seeder.seed();
     log("seed");

@@ -14,4 +14,4 @@ console_error_panic_hook = "0.1.7"
 
 [dependencies.concrete-csprng]
 path = "../concrete-core/concrete-csprng"
-features = ["seeder_js", "generator_soft"]
+features = ["seeder_external_lib", "generator_soft"]
