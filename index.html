@@ -4,11 +4,11 @@
 
 <body>
     <script type="module">
-        import init, { generate } from './pkg/concrete_wasm_test.js';
+        import init, { run } from './pkg/concrete_wasm_test.js';
 
         async function run() {
             await init();
-            generate();
+            run();
         }
 
         run();

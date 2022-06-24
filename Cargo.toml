@@ -11,7 +11,8 @@ crate-type = ["cdylib", "rlib"]
 [dependencies]
 wasm-bindgen = {version = "0.2.74"}
 console_error_panic_hook = "0.1.7"
+concrete = {path = "../concrete/concrete"}
 
-[dependencies.concrete-csprng]
-path = "../concrete-core/concrete-csprng"
-features = ["seeder_external_lib", "generator_soft"]
+#[dependencies.concrete-csprng]
+#path = "../concrete-core/concrete-csprng"
+#features = ["seeder_external_lib", "generator_soft"]
