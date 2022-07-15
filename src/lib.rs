@@ -1,6 +1,9 @@
 use std::panic;
 
 extern crate console_error_panic_hook;
+use concrete_core_wasm::{DefaultEngine, JsFunctionSeeder, LweDimension, Variance};
+// use concrete_commons::parameters::LweDimension;
+use js_sys::Function;
 use wasm_bindgen::prelude::*;
 
 #[wasm_bindgen]
@@ -13,10 +16,10 @@ extern "C" {
 
 #[wasm_bindgen]
 pub fn run_rust() {
-    main().expect("failed to run concrete");
+    main();
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> Result<(), JsError> {
     // // generate a secret key
     // let secret_key = LWESecretKey::new(&LWE128_630);
 
@@ -53,5 +56,68 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Ok(())
 
     log("hello, world!");
+
+    let lwe_dimension = LweDimension::new(750);
+    let noise = Variance::new(2_f64.powf(-104.));
+
+    // Here a hard-set encoding is applied on the input (shift by 59 bits) which corresponds here
+    // to a precision of 4 bits with an additional bit of padding (won't be used but required for
+    // PBS)
+    // かける数
+    let raw_input = 3_u32 << 27;
+
+    // We will multiply by 4
+    // かけられる数
+    let raw_input_cleatext = 4_u32;
+
+    let js_func = Function::new_no_args(
+        r#"
+        const array = new Uint8Array(16);
+        return array
+    "#,
+    );
+    let mut engine = DefaultEngine::new(JsFunctionSeeder::new(js_func))?;
+
+    let clear_text = engine.create_cleartext_f64(12.3);
+    let key = engine.create_lwe_secret_key_32(lwe_dimension)?;
+
+    // We crate the input plaintext from the raw input
+    let input_plaintext = engine.create_plaintext_32(raw_input)?;
+    let input_ciphertext = engine.encrypt_lwe_ciphertext_32(&key, &input_plaintext, noise)?;
+
+    let noise = Variance::new(2_f64.powf(-104.));
+    // The content of the output ciphertext will be discarded, use a placeholder plaintext of 0
+    let placeholder_output_plaintext = engine.create_plaintext_32(0u32)?;
+    let mut ouptut_ciphertext =
+        engine.encrypt_lwe_ciphertext_32(&key, &placeholder_output_plaintext, noise)?;
+
+    // // Perform the multiplication, overwriting (discarding) the output ciphertext content
+    // engine.discard_mul_lwe_ciphertext_cleartext(
+    //     &mut ouptut_ciphertext,
+    //     &input_ciphertext,
+    //     &cleartext,
+    // )?;
+
+    // Get the decrypted result as a plaintext and then a raw value
+    let decrypted_plaintext = engine.decrypt_lwe_ciphertext_32(&key, &ouptut_ciphertext)?;
+    let raw_decrypted_plaintext = engine.retrieve_plaintext_32(&decrypted_plaintext)?;
+
+    // Round the output for our 4 bits of precision
+    let output = raw_decrypted_plaintext >> 26;
+    let carry = output % 2;
+    println!("output: {}, carry: {}", output, carry);
+    let output = ((output >> 1) + carry) % (1 << 5);
+
+    // Check the high bits have the result we expect
+    assert_eq!(output, 12);
+
+    // engine.destroy(cleartext)?;
+    // engine.destroy(key)?;
+    // engine.destroy(input_plaintext)?;
+    // engine.destroy(placeholder_output_plaintext)?;
+    // engine.destroy(decrypted_plaintext)?;
+    // engine.destroy(input_ciphertext)?;
+    // engine.destroy(ouptut_ciphertext)?;
+
     Ok(())
 }
