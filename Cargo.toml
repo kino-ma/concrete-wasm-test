@@ -12,6 +12,7 @@ crate-type = ["cdylib", "rlib"]
 wasm-bindgen = {version = "0.2.74"}
 console_error_panic_hook = "0.1.7"
 concrete-core-wasm = { git = "https://github.com/zama-ai/concrete-core", hash = "e663c670d94bcd220b59ef0aca047a55d80c3f27" }
+concrete-core = { git = "https://github.com/zama-ai/concrete-core", hash = "e663c670d94bcd220b59ef0aca047a55d80c3f27" }
 concrete-commons = { git = "https://github.com/zama-ai/concrete-core", hash = "e663c670d94bcd220b59ef0aca047a55d80c3f27" }
 js-sys = "0.3"
 
